@@ -1,0 +1,89 @@
+services:
+  stt_django:
+    image: mika2386/bot_manager:latest
+    container_name: stt_django
+    env_file:
+      - .env
+    volumes:
+      - ./media:/app/media
+      - ./static:/app/static
+    ports:
+      - "8000:8000"
+    depends_on:
+      - stt_pgdb
+    networks:
+      - backend
+
+  stt_celery:
+    image: mika2386/bot_manager:latest
+    command: celery -A config worker --loglevel=info --concurrency=2
+    container_name: stt_celery
+    env_file:
+      - .env
+    volumes:
+      - ./media:/app/media
+    depends_on:
+      - stt_django
+      - stt_redis
+    networks:
+      - backend
+
+  stt_celery_beat:
+    image: mika2386/bot_manager:latest
+    command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    container_name: stt_celery_beat
+    env_file:
+      - .env
+    depends_on:
+      - stt_django
+      - stt_pgdb
+    networks:
+      - backend
+
+  stt_pgdb:
+    image: postgres
+    container_name: stt_pgdb
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - backend
+
+  stt_redis:
+    image: redis
+    container_name: stt_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+
+  stt_nginx:
+      image: nginx:alpine
+      container_name: stt_nginx
+      ports:
+        - "80:80"
+        - "443:443"
+      volumes:
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+        - ./nginx/conf.d:/etc/nginx/conf.d:ro
+        - ./static:/app/static
+        - ./media:/app/media
+        - ./nginx/certbot/conf:/etc/letsencrypt
+        - ./nginx/certbot/www:/var/www/certbot
+      depends_on:
+        - stt_django
+      networks:
+        - backend
+      restart: always
+
+volumes:
+  pgdata:
+
+networks:
+  backend:
+    name: backend
+    driver: bridge
