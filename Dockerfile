@@ -1,4 +1,4 @@
-FROM python:3.12 as builder
+FROM python:3.13.2 as builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry config virtualenvs.create false && \
     poetry install --no-dev --no-interaction --no-ansi
 
-FROM python:3.12
+FROM python:3.13.2
 
 WORKDIR /app
 
