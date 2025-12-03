@@ -21,7 +21,8 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository }}:latest
+        runn: docker buildx build -t mika-2386/bot_manager:latest .
+#        run: docker build -t ghcr.io/${{ github.repository }}:latest
 
       - name: Push Docker image
         run: docker push ghcr.io/${{ github.repository }}:latest -f bot_manager/Dockerfile bot_manager
