@@ -15,17 +15,18 @@ RUN apt-get update && \
 # Копируем файлы зависимостей
 COPY poetry.lock pyproject.toml ./
 
+
 # Устанавливаем зависимости через poetry и экспортируем requirements.txt
 RUN poetry config virtualenvs.create false && \
     poetry export -f requirements.txt --output requirements.txt --without-hashes && \
     pip wheel --wheel-dir=wheels -r requirements.txt
+
 
 # Копируем приложение
 COPY .. ./
 
 # Даем права на запуск скрипта
 RUN chmod +x ./entrypoint-prod.sh
-
 
 FROM python:3.13.2
 
