@@ -1,4 +1,4 @@
-FROM python:3.13.2 as builder
+FROM python:3.12 as builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY poetry.lock pyproject.toml ./
 RUN poetry config virtualenvs.create false && \
     poetry install --no-dev --no-interaction --no-ansi
 
-FROM python:3.13.2
+FROM python:3.12
 
 WORKDIR /app
 
@@ -25,7 +25,7 @@ ENV GUNICORN_TIMEOUT=0
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
-COPY .. ./
+COPY . ./
 
 RUN chmod +x ./entrypoint-prod.sh
 
