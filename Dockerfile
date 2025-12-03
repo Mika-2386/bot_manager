@@ -22,7 +22,7 @@ WORKDIR /app
 
 ENV GUNICORN_TIMEOUT=0
 
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/lib/python3.13.2/site-packages /usr/local/lib/python3.13.2/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
 COPY .. ./
