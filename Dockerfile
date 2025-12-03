@@ -15,10 +15,12 @@ RUN apt-get update && \
 # Копируем файлы зависимостей
 COPY poetry.lock pyproject.toml ./
 
-# Устанавливаем зависимости через poetry и экспортируем в requirements.txt
+
+# Устанавливаем зависимости через poetry и экспортируем requirements.txt
 RUN poetry config virtualenvs.create false && \
     poetry export -f requirements.txt --output requirements.txt --without-hashes && \
-    pip install -r requirements.txt
+    pip wheel --wheel-dir=wheels -r requirements.txt
+
 
 # Копируем приложение
 COPY .. ./
@@ -32,11 +34,10 @@ WORKDIR /app
 
 ENV GUNICORN_TIMEOUT=0
 
-
-# Копируем установленные зависимости
-
-COPY --from=builder /usr/local/lib/python3.13.2/site-packages /usr/local/lib/python3.13.2/site-packages
-COPY --from=builder /usr/local/bin /usr/local/bin
+# Устанавливаем зависимости из wheel-файлов
+COPY --from=builder /app/wheels /wheels
+RUN pip install --upgrade pip && \
+    pip install /wheels/*.whl
 
 # Копируем приложение
 COPY .. ./
