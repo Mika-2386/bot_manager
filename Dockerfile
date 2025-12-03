@@ -32,7 +32,9 @@ WORKDIR /app
 
 ENV GUNICORN_TIMEOUT=0
 
+
 # Копируем установленные зависимости
+
 COPY --from=builder /usr/local/lib/python3.13.2/site-packages /usr/local/lib/python3.13.2/site-packages
 COPY --from=builder /usr/local/bin /usr/local/bin
 
