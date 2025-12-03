@@ -1,6 +1,6 @@
 services:
   stt_django:
-    image: ghcr.io/mika2386/bot_manager:latest
+    image: ghcr.io/mika2386/bot_manager:latest .
     container_name: stt_django
     env_file:
       - .env
@@ -15,7 +15,7 @@ services:
       - backend
 
   stt_celery:
-    image: ghcr.io/mika2386/bot_manager:latest
+    image: ghcr.io/mika2386/bot_manager:latest .
     command: celery -A config worker --loglevel=info --concurrency=2
     container_name: stt_celery
     env_file:
@@ -29,7 +29,7 @@ services:
       - backend
 
   stt_celery_beat:
-    image: ghcr.io/mika2386/bot_manager:latest
+    image: ghcr.io/mika2386/bot_manager:latest .
     command: celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     container_name: stt_celery_beat
     env_file:
