@@ -31,6 +31,9 @@ FROM python:3.12 as wheel-builder
 
 WORKDIR /app
 
+# Устанавливаем poetry прямо в этом этапе
+RUN pip install poetry==$POETRY_VERSION
+
 # Копируем проект из предыдущего этапа
 COPY --from=builder /app /app
 
