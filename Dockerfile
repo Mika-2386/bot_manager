@@ -54,7 +54,8 @@ COPY --from=builder /app/poetry.lock /app/pyproject.toml ./
 RUN poetry export -f requirements.txt --output=requirements.txt --without-hashes
 
 # Генерируем wheel-файлы
-RUN pip wheel --wheel-dir=/app/wheels -r requirements.txt
+RUN pip download -r requirements.txt -d /app/wheels
+# RUN pip wheel --wheel-dir=/app/wheels -r requirements.txt
 
 # Основной финальный образ
 FROM python:3.12
