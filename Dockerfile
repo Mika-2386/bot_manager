@@ -13,6 +13,9 @@ RUN apt-get update && \
     pip install --upgrade pip && \
     pip install "poetry==$POETRY_VERSION"
 
+# Добавляем папку с poetry в PATH, чтобы команда была доступна
+ENV PATH="/root/.local/bin:${PATH}"
+
 # Копируем файлы для установки зависимостей
 COPY poetry.lock pyproject.toml ./
 
@@ -34,12 +37,9 @@ COPY --from=builder /app /app
 # Создаём папку для wheel-файлов
 RUN mkdir /app/wheels
 
-# Генерируем wheel-файлы из всех зависимостей
-# Для этого нужен файл requirements.txt, который вы создаете в этапе build
-# однако в вашем Dockerfile его нет, поэтому добавлю команду для генерации requirements.txt
-# Перед этим нужно убедиться, что requirements.txt есть или создать его командой
-COPY poetry.lock pyproject.toml ./
-RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
+# Экспортируем зависимости в requirements.txt
+COPY --from=builder /app/poetry.lock /app/pyproject.toml ./
+RUN poetry export -f requirements.txt --output=requirements.txt --without-hashes
 
 # Генерируем wheel-файлы
 RUN pip wheel --wheel-dir=/app/wheels -r requirements.txt
