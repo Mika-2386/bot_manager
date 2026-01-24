@@ -1,11 +1,17 @@
+# Объявляем аргумент для версии Poetry
+ARG POETRY_VERSION=1.7.1
+
 # Этап сборки зависимостей и окружения
 FROM python:3.12 as builder
+
+# Передача аргумента
+ARG POETRY_VERSION
 
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    POETRY_VERSION=1.7.1
+    POETRY_VERSION=${POETRY_VERSION}
 
 # Обновляем пакеты и устанавливаем Poetry
 RUN apt-get update && \
@@ -16,7 +22,7 @@ RUN apt-get update && \
 # Добавляем папку с poetry в PATH, чтобы команда была доступна
 ENV PATH="/root/.local/bin:${PATH}"
 
-# Копируем файлы для установки зависимостей
+# Копируем файлы зависимостей
 COPY poetry.lock pyproject.toml ./
 
 # Устанавливаем зависимости без виртуальных окружений
@@ -29,12 +35,15 @@ RUN pip install celery
 # Этап для сборки wheel-файлов
 FROM python:3.12 as wheel-builder
 
+# Передача аргумента
+ARG POETRY_VERSION
+
 WORKDIR /app
 
 # Устанавливаем poetry с использованием переменной окружения из предыдущего этапа
 RUN pip install poetry==${POETRY_VERSION}
 
-# Копируем проект
+# Копируем проект из предыдущего этапа
 COPY --from=builder /app /app
 
 # Создаём папку для wheel-файлов
