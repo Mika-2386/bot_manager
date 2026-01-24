@@ -31,16 +31,16 @@ FROM python:3.12 as wheel-builder
 
 WORKDIR /app
 
-# Устанавливаем poetry прямо в этом этапе
-RUN pip install poetry==$POETRY_VERSION
+# Устанавливаем poetry с использованием переменной окружения из предыдущего этапа
+RUN pip install poetry==${POETRY_VERSION}
 
-# Копируем проект из предыдущего этапа
+# Копируем проект
 COPY --from=builder /app /app
 
 # Создаём папку для wheel-файлов
 RUN mkdir /app/wheels
 
-# Экспортируем зависимости в requirements.txt
+# Экспортируем зависимости
 COPY --from=builder /app/poetry.lock /app/pyproject.toml ./
 RUN poetry export -f requirements.txt --output=requirements.txt --without-hashes
 
