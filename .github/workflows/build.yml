@@ -21,11 +21,10 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker buildx build -t mika-2386/bot_manager:latest .
-
+        run: docker build -t ghcr.io/${{ github.repository }}:latest -f django-backend/Dockerfile django-backend
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository }}:latest -f bot_manager/Dockerfile bot_manager
+        run: docker push ghcr.io/${{ github.repository }}:latest
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
@@ -35,15 +34,10 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             echo "${{ secrets.VPS_GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-
             docker pull ghcr.io/${{ github.repository }}:latest
-
             cd /home/ubuntu/django
-
             docker compose down && docker compose up -d
-
             docker logout ghcr.io
-
       - name: Logout from GitHub Container Registry
         if: always()
         run: docker logout ghcr.io
