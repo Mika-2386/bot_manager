@@ -21,11 +21,13 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker buildx build -t mika-2386/bot_manager:latest .
+        run:  docker buildx build -t mika-2386/bot_manager:latest .
 
+      - name: Verify Docker image exists
+        run:  docker images ghcr.io/mika-2386/bot_manager:latest
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository }}:latest
+        run: docker push ghcr.io/mika-2386/bot_manager:latest
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
