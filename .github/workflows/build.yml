@@ -27,7 +27,7 @@ jobs:
         run:  docker images ghcr.io/mika-2386/bot_manager:latest
 
       - name: Push Docker image
-        run: docker push ghcr.io/mika-2386/bot_manager:latest
+        run: docker push ghcr.io/${{ github.repository }}:latest
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
