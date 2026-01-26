@@ -17,14 +17,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set repository name lowercase
+        id: repo_lower
+        run: echo "REPO_NAME=$(echo '${{ github.repository }}' | tr 'A-Z' 'a-z')" >> $GITHUB_OUTPUT
+
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository | toLowerCase }}:latest -f django-backend/Dockerfile django-backend
+        run: |
+          echo "building image..."
+          docker build -t ghcr.io/${{ steps.repo_lower.outputs.REPO_NAME }}:latest -f django-backend/Dockerfile django-backend
 
       - name: Push Docker image
-        run: docker push ghcr.io/${{ github.repository | toLowerCase }}:latest
+        run: |
+          echo "Push image..."
+          docker push ghcr.io/${{ steps.repo_lower.outputs.REPO_NAME }}:latest
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
@@ -34,8 +42,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             echo "${{ secrets.VPS_GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
-            docker pull ghcr.io/${{ github.repository }}:latest
-            cd /home/ubuntu/django
+            docker pull ghcr.io/${{ steps.repo_lower.outputs.REPO_NAME }}:latest
+            cd /home/mika/django
             docker compose down && docker compose up -d
             docker logout ghcr.io
       - name: Logout from GitHub Container Registry
