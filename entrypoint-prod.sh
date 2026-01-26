@@ -20,8 +20,7 @@ start_django() {
     GUNICORN_TIMEOUT=${GUNICORN_TIMEOUT:-30}
 
     echo "Starting server..."
-    gunicorn bot_manager.wsgi:application
-    #gunicorn --timeout "$GUNICORN_TIMEOUT" --workers 3 --threads 3 --bind 0.0.0.0:"$PORT" config.wsgi:application
+    gunicorn --timeout "$GUNICORN_TIMEOUT" --workers 3 --threads 3 --bind 0.0.0.0:"$PORT" config.wsgi:application
 
     echo "Server has started!"
 }
