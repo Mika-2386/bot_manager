@@ -14,7 +14,7 @@ cp /root/.ssh/authorized_keys /home/<имя_пользователя>/.ssh/
 chown -R <имя_пользователя>:<имя_пользователя> /home/<имя_пользователя>/.ssh
 
 # Логин в GitHub Container Registry
-cat docker_login.txt | docker login ghcr.io -u Github --password-stdin
+cat docker_login.txt | docker login ghcr.io -u github --password-stdin
 
 # Создание SSH ключа для GitHub Actions на вашем VPS(можно использовать ту же команду и для создания SSH ключа на локальной машине)
 ssh-keygen -t rsa -b 4096 -C "github-actions"
