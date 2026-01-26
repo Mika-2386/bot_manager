@@ -3,3 +3,4 @@ djangorestframework
 openai
 python-telegram-bot
 celery
+gunicorn
