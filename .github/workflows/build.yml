@@ -27,7 +27,7 @@ jobs:
       - name: Build Docker image
         run: |
           echo "building image..."
-          docker build -t ghcr.io/${{ steps.repo_lower.outputs.REPO_NAME }}:latest 
+          docker build -t ghcr.io/${{ steps.repo_lower.outputs.REPO_NAME }}:latest -f bot_manager/Dockerfile bot_manager
 
       - name: Push Docker image
         run: |
@@ -44,7 +44,7 @@ jobs:
             echo "${{ secrets.VPS_GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker pull ghcr.io/${{ steps.repo_lower.outputs.REPO_NAME }}:latest
             cd /home/mika/django
-            docker compose down && docker compose up -d
+            docker compose -f docker-compose-prog.yaml down && docker compose -f docker-compose-prog.yaml up -d
             docker logout ghcr.io
       - name: Logout from GitHub Container Registry
         if: always()
