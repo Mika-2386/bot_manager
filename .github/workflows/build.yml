@@ -27,7 +27,7 @@ jobs:
       - name: Build Docker image
         run: |
           echo "building image..."
-          docker build -t ghcr.io/${{ steps.repo_lower.outputs.REPO_NAME }}:latest -f bot_manager/Dockerfile bot_manager
+          docker build -t ghcr.io/${{ steps.repo_lower.outputs.REPO_NAME }}:latest -f Dockerfile 
 
       - name: Push Docker image
         run: |
